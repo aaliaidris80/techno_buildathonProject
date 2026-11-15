@@ -1,120 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="DocuPing - Your Personal Student Document Companion" />
-  <title>DocuPing - Document Management</title>
-  
+  <meta name="description"
+    content="DocuPing - Your Personal Student Document Companion. Organize, track, and stay prepared." />
+  <title>DocuPing - Overview & Dashboard</title>
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
+
   <!-- CSS Stylesheets -->
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
 </head>
+
 <body>
-  <!-- Mobile Navigation Bar (visible <= 768px) -->
-  <div class="mobile-topbar">
-    <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="4" y1="12" x2="20" y2="12"></line>
-        <line x1="4" y1="6" x2="20" y2="6"></line>
-        <line x1="4" y1="18" x2="20" y2="18"></line>
-      </svg>
-    </button>
-    <div style="font-weight: 700; font-size: 1.125rem;">DocuPing</div>
-    <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.875rem;">A</div>
-  </div>
+    <!-- Mobile Navigation Bar (Visible only on screens <= 768px) -->
+    <div class="mobile-topbar" role="banner">
+      <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+      </button>
+      <div style="font-weight: 700; font-size: 1.125rem; letter-spacing: -0.01em;">DocuPing</div>
+      <a href="pages/settings.html" class="dashboard-avatar-btn"
+        style="width: 32px; height: 32px; font-size: 0.8125rem;" aria-label="Profile Settings">A</a>
+    </div>
 
-  <div class="app-shell">
-    <!-- AppSidebar Mount Point -->
-    <div id="sidebar-mount"></div>
+    <div class="app-shell">
+      <!-- AppSidebar Mount Point -->
+      <div id="sidebar-mount"></div>
 
-    <!-- Main Content Area -->
-    <main class="app-main" id="main-content">
-      <div class="app-container">
-        <!-- TopBar Mount Point (Search, Notifications, Profile) -->
-        <div id="topbar-mount"></div>
+      <!-- Main Content Area (Matches Screenshot 3) -->
+      <main class="app-main" id="main-content">
+        <div class="app-container">
 
-        <!-- Page Header -->
-        <header class="page-header" style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <h1 class="page-header-title">Good Evening, Ananya!</h1>
-            <p class="page-header-subtitle">Your documents, under control.</p>
-          </div>
-          <div style="display: flex; gap: 0.75rem;">
-            <button type="button" class="btn btn-secondary btn-sm" id="btn-trigger-toast">Test Toast</button>
-            <button type="button" class="btn btn-primary btn-sm" id="btn-trigger-modal">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              + Add Reminder
-            </button>
-          </div>
-        </header>
+              <!-- 1. Dashboard Header (Greeting + Actions) -->
+              <header class="dashboard-header">
+                <div class="dashboard-greeting">
+                  <h1 class="dashboard-title" id="dashboard-greeting-name">Good Evening, Ananya!</h1>
+                  <p class="dashboard-subtitle">Your documents, under control.</p>
+                </div>
 
-        <!-- Metric Overview Cards (Screenshot 3) -->
-        <section class="grid-2" aria-label="Document Statistics" style="margin-bottom: 2rem;">
-          <!-- Document Readiness Donut Card -->
-          <article class="stat-card">
-            <div class="stat-card-content">
-              <span class="stat-card-label">Document Readiness</span>
-              <span class="stat-card-value">78%</span>
-              <span class="stat-card-subtext">You're almost there!</span>
-            </div>
-            <div class="stat-card-graphic" aria-hidden="true">
-              <svg class="progress-ring" width="68" height="68" viewBox="0 0 68 68">
-                <circle class="progress-ring-circle-bg" stroke-width="7" fill="transparent" r="28" cx="34" cy="34" />
-                <circle class="progress-ring-circle-fill" stroke-width="7" stroke-dasharray="175.9" stroke-dashoffset="38.7" fill="transparent" r="28" cx="34" cy="34" />
-              </svg>
-            </div>
-          </article>
+                      <div class="dashboard-header-actions" style="position: relative;">
+                        <!-- Notification Bell with Alert Indicator -->
+                        <button type="button" class="dashboard-action-btn" id="dashboard-notif-btn"
+                          aria-label="Notifications" aria-expanded="false" aria-haspopup="true">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                          </svg>
+                          <span class="dashboard-notif-dot" aria-label="New notifications available"></span>
+                        </button>
 
-          <!-- Documents Saved Stat Card -->
-          <article class="stat-card">
-            <div class="stat-card-content">
-              <span class="stat-card-label">Documents Saved</span>
-              <span class="stat-card-value">24</span>
-              <span class="stat-card-subtext">Across your vaults</span>
-            </div>
-            <div class="stat-card-graphic" aria-hidden="true">
-              <div class="stat-badge-circle">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-                </svg>
-              </div>
-            </div>
-          </article>
-        </section>
+                        <!-- Notification Dropdown Panel -->
+                        <div class="notifications-dropdown" id="dashboard-notif-dropdown" role="region"
+                          aria-label="Recent notifications">
+                          <div class="notifications-header">
+                            <span class="notifications-title">Notifications</span>
+                            <span class="notifications-count">2 New</span>
+                          </div>
+                          <ul class="notifications-list">
+                            <li>
+                              <a href="pages/ping-reminders.html" class="notification-item">
+                                <div class="notification-icon is-warning" aria-hidden="true">
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                  </svg>
+                                </div>
+                                <div class="notification-content">
+                                  <p class="notification-text">Passport Expiry: Renewal recommended within 28 days.</p>
+                                  <span class="notification-time">2 hours ago</span>
+                                </div>
+                              </a>
+                            </li>
+                            <li>
+                              <a href="pages/vault-category.html?category=academic" class="notification-item">
+                                <div class="notification-icon is-success" aria-hidden="true">
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                  </svg>
+                                </div>
+                                <div class="notification-content">
+                                  <p class="notification-text">Semester 5 Marksheet verified and securely saved.</p>
+                                  <span class="notification-time">Yesterday</span>
+                                </div>
+                              </a>
+                            </li>
+                          </ul>
+                          <div class="notifications-footer">
+                            <a href="pages/ping-reminders.html">View all reminders &rarr;</a>
+                          </div>
+                        </div>
 
-        <!-- Your Vaults Section (Screenshot 3) -->
-        <section aria-labelledby="vaults-heading">
-          <h2 class="section-title" id="vaults-heading">Your Vaults</h2>
-          <div class="grid-4" id="vaults-grid">
-            <!-- Populated via JS VaultCard Component -->
-          </div>
-        </section>
+                        <!-- Profile Avatar -->
+                        <a href="pages/settings.html" class="dashboard-avatar-btn" id="dashboard-user-avatar"
+                          aria-label="Profile Settings">A</a>
+                      </div>
+              </header>
 
-        <!-- Recent Documents Preview & Status Badges (Screenshots 4, 5, 8) -->
-        <section aria-labelledby="recent-docs-heading" style="margin-top: 2.5rem;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <h2 class="section-title" id="recent-docs-heading" style="margin: 0;">Recent Documents</h2>
-              <span class="status-badge status-badge-upcoming">Upcoming</span>
-              <span class="status-badge status-badge-soon">Soon</span>
-            </div>
-            <a href="pages/my-vault.html" class="text-sm font-semibold" style="color: var(--color-primary);">View All &rarr;</a>
-          </div>
+                    <!-- 2. Statistics Section (Matches Screenshot 3) -->
+                    <section class="dashboard-stats-grid" aria-label="Document Statistics">
+                      <!-- Document Readiness Card -->
+                      <article class="dashboard-stat-card" id="stat-card-readiness" tabindex="0" role="button"
+                        aria-label="Document Readiness: 78% complete. You're almost there!">
+                        <div class="dashboard-stat-info">
+                          <span class="dashboard-stat-label">Document Readiness</span>
+                          <span class="dashboard-stat-value">78%</span>
+                          <span class="dashboard-stat-subtext">You're almost there!</span>
+                        </div>
+                          <div class="dashboard-stat-graphic" aria-hidden="true">
+                            <div class="progress-ring-container">
+                              <svg class="progress-ring-svg" viewBox="0 0 84 84">
+                                <!-- Background Track -->
+                                <circle class="progress-ring-circle-bg" stroke-width="9" fill="transparent" r="34"
+                                  cx="42" cy="42" />
+                                <!-- Progress Fill (78% filled, 213.63 circumference, 47.0 dashoffset) -->
+                                <circle id="progress-circle-fill" class="progress-ring-circle-fill" stroke-width="9"
+                                  stroke-dasharray="213.63 213.63" stroke-dashoffset="47.0" fill="transparent" r="34"
+                                  cx="42" cy="42" />
+                              </svg>
+                            </div>
+                          </div>
+                      </article>
 
-          <div class="grid-3" id="docs-grid">
-            <!-- Populated via JS DocumentCard Component -->
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
+                          <!-- Documents Saved Card -->
+                          <article class="dashboard-stat-card" id="stat-card-saved" tabindex="0" role="button"
+                            aria-label="Documents Saved: 24 documents across your vaults">
+                            <div class="dashboard-stat-info">
+                              <span class="dashboard-stat-label">Documents Saved</span>
+                              <span class="dashboard-stat-value">24</span>
+                              <span class="dashboard-stat-subtext">Across your vaults</span>
+                            </div>
+                                  <div class="dashboard-stat-graphic" aria-hidden="true">
+                                    <div class="stat-folder-badge">
+                                      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                          d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z">
+                                        </path>
+                                      </svg>
+                                    </div>
+                                  </div>
+                          </article>
+                    </section>
 
-  <!-- Main ES6 Application Script -->
-  <script type="module" src="js/app.js"></script>
+                        <!-- 3. Your Vaults Section (Matches Screenshot 3) -->
+                        <section class="dashboard-vaults-section" aria-labelledby="vaults-heading">
+                          <h2 class="dashboard-section-title" id="vaults-heading">Your Vaults</h2>
+
+                          <div class="dashboard-vaults-grid" id="vaults-grid">
+                            <!-- 1. Academic Card -->
+                            <a href="pages/vault-category.html?category=academic" class="category-card"
+                              data-category-id="academic" aria-label="Academic Vault: Marksheets, ID">
+                              <span class="category-card-badge">8 docs</span>
+                              <div class="category-card-icon" aria-hidden="true">
+                                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                </svg>
+                              </div>
+                              <h3 class="category-card-title">Academic</h3>
+                              <p class="category-card-desc">Marksheets, ID</p>
+                            </a>
+
+                            <!-- 2. Career Card -->
+                            <a href="pages/vault-category.html?category=career" class="category-card"
+                              data-category-id="career" aria-label="Career Vault: Resume, Internships">
+                              <span class="category-card-badge">6 docs</span>
+                              <div class="category-card-icon" aria-hidden="true">
+                                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <rect width="20" height="14" x="2" y="7" rx="2" ry="2"></rect>
+                                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                </svg>
+                              </div>
+                              <h3 class="category-card-title">Career</h3>
+                              <p class="category-card-desc">Resume, Internships</p>
+                            </a>
+
+                            <!-- 3. Achievements Card -->
+                            <a href="pages/vault-category.html?category=achievements" class="category-card"
+                              data-category-id="achievements" aria-label="Achievements Vault: Certificates">
+                              <span class="category-card-badge">5 docs</span>
+                              <div class="category-card-icon" aria-hidden="true">
+                                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                                  <path d="M4 22h16"></path>
+                                  <path
+                                    d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1 .45-1 1v1h12v-1c0-.55-.45-1-1-1h-2c-.55 0-1-.45-1-1v-2.34">
+                                  </path>
+                                  <path d="M6 4h12v7a6 6 0 0 1-12 0V4z"></path>
+                                </svg>
+                              </div>
+                              <h3 class="category-card-title">Achievements</h3>
+                              <p class="category-card-desc">Certificates</p>
+                            </a>
+
+                            <!-- 4. Health Card -->
+                            <a href="pages/vault-category.html?category=health" class="category-card"
+                              data-category-id="health" aria-label="Health Vault: Reports, Meds">
+                              <span class="category-card-badge">5 docs</span>
+                              <div class="category-card-icon" aria-hidden="true">
+                                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path
+                                    d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z">
+                                  </path>
+                                </svg>
+                              </div>
+                              <h3 class="category-card-title">Health</h3>
+                              <p class="category-card-desc">Reports, Meds</p>
+                            </a>
+                          </div>
+                        </section>
+
+                          <!-- Semantic Mount for Extension / Component Verification -->
+                          <section aria-labelledby="recent-docs-heading" class="dashboard-recent-section"
+                            id="recent-docs-section" style="display: none;">
+                            <h2 class="dashboard-section-title" id="recent-docs-heading">Recent Documents</h2>
+                            <div class="dashboard-vaults-grid" id="docs-grid"></div>
+                          </section>
+
+                      </div>
+      </main>
+    </div>
+
+    <!-- Main ES6 Application Script -->
+    <script type="module" src="js/app.js"></script>
 </body>
+
 </html>

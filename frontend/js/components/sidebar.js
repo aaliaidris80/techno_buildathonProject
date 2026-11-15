@@ -14,7 +14,7 @@ export const NAV_ITEMS = [
 
 export const FOOTER_ITEMS = [
   { id: "settings", label: "Settings", href: "pages/settings.html", icon: "settings" },
-  { id: "logout", label: "Logout", href: "#logout", icon: "logout" }
+  { id: "logout", label: "Logout", href: "pages/login.html", icon: "logout" }
 ];
 
 /**
@@ -110,11 +110,35 @@ export function initSidebar() {
     }
   });
 
-  // Handle navigation clicks gracefully during review
+  // Handle navigation clicks
   sidebar.querySelectorAll(".sidebar-link").forEach((link) => {
     link.addEventListener("click", (e) => {
+      const navId = link.getAttribute("data-nav-id");
+
+      if (navId === "logout") {
+        e.preventDefault();
+        try {
+          localStorage.removeItem("docuping_auth_token");
+          localStorage.removeItem("docuping_user_data");
+        } catch (err) {}
+        import("./toast.js").then(({ toast }) => {
+          toast.success("Logged out successfully. Redirecting to login...");
+          setTimeout(() => {
+            window.location.href = link.getAttribute("href");
+          }, 800);
+        });
+        return;
+      }
+
       const href = link.getAttribute("href");
-      if (href && (href.includes("pages/") || href === "#logout")) {
+      const isKnownPage = href && (
+        href.includes("login.html") ||
+        href.includes("signup.html") ||
+        href.includes("my-vault.html") ||
+        href.includes("dashboard.html") ||
+        href.includes("index.html")
+      );
+      if (href && href.includes("pages/") && !isKnownPage) {
         e.preventDefault();
         const label = link.querySelector("span:last-child")?.textContent || "This";
         import("./toast.js").then(({ toast }) => {

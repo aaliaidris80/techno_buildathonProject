@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Vault Category View - DocuPing" />
+  <title>Category Vault - DocuPing</title>
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/vault.css" />
+</head>
+<body>
+  <!-- Mobile Navigation Bar -->
+  <div class="mobile-topbar" role="banner">
+    <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="4" y1="12" x2="20" y2="12"></line>
+        <line x1="4" y1="6" x2="20" y2="6"></line>
+        <line x1="4" y1="18" x2="20" y2="18"></line>
+      </svg>
+    </button>
+    <div style="font-weight: 700; font-size: 1.125rem;">DocuPing</div>
+    <a href="settings.html" class="user-avatar" style="width: 32px; height: 32px; font-size: 0.8125rem;" aria-label="Profile Settings">A</a>
+  </div>
+
+  <div class="app-shell">
+    <!-- AppSidebar Mount Point -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content Area (Matches Screenshot 5) -->
+    <main class="app-main" id="main-content">
+      <div class="app-container">
+
+        <!-- 1. Top Bar Search (Screenshot 5) -->
+        <header class="vault-topbar">
+          <div class="vault-topbar-search">
+            <div class="vault-search-box">
+              <span class="vault-search-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </span>
+              <input
+                type="search"
+                class="vault-search-input"
+                id="vault-search-input"
+                placeholder="Search in category..."
+                aria-label="Search in category"
+              />
+              <button type="button" class="vault-search-clear" id="vault-search-clear" aria-label="Clear search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="ping-reminders.html" class="topbar-btn" aria-label="Notifications">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+              </svg>
+            </a>
+            <a href="settings.html" class="user-avatar" aria-label="Profile Settings">A</a>
+          </div>
+        </header>
+
+        <!-- 2. Category Header (Screenshot 5) -->
+        <div class="vault-header">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="stat-badge-circle" id="category-header-icon" style="width: 52px; height: 52px; border-radius: 14px;" aria-hidden="true">
+              <!-- Category Icon -->
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <h1 class="vault-title" id="category-header-title">Academic Vault</h1>
+                <span class="vault-count-badge" id="vault-count-badge">3 documents</span>
+              </div>
+              <p class="vault-subtitle" id="category-header-subtitle">Marksheets, IDs and more</p>
+            </div>
+          </div>
+
+          <div class="vault-actions">
+            <a href="my-vault.html" class="btn btn-secondary btn-sm">&larr; All Vaults</a>
+            <button type="button" class="btn btn-primary" id="btn-upload-doc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>+ Upload</span>
+            </button>
+            <button type="button" class="btn btn-track" id="btn-track-doc">
+              <span>+ Track Only</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Sort Bar -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+          <div class="vault-sort-group">
+            <label for="vault-sort-select" class="vault-sort-label">Sort by:</label>
+            <select id="vault-sort-select" class="vault-sort-select" aria-label="Sort documents">
+              <option value="recent">Recently Added</option>
+              <option value="name">Name (A-Z)</option>
+              <option value="expiry">Expiry Date</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Hidden filter pills to integrate cleanly with vaultController -->
+        <div id="vault-filter-pills" style="display: none;"></div>
+
+        <!-- 4. Document Grid Container -->
+        <div class="vault-grid" id="vault-docs-grid" role="region" aria-label="Category documents grid">
+          <!-- Populated dynamically via vault.js -->
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Page Logic Script -->
+  <script type="module">
+    import { createSidebar, initSidebar } from "../js/components/sidebar.js";
+    import { initVault, vaultController } from "../js/vault.js";
+    import { ICONS } from "../js/utils/icons.js";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const mount = document.getElementById("sidebar-mount");
+      if (mount) {
+        mount.innerHTML = createSidebar("my-vault", "../");
+        initSidebar();
+      }
+
+      // Configure Category Header from URL
+      const params = new URLSearchParams(window.location.search);
+      const catParam = params.get("category") || "academic";
+      const normalizedCat = catParam.charAt(0).toUpperCase() + catParam.slice(1).toLowerCase();
+
+      const titleEl = document.getElementById("category-header-title");
+      const subEl = document.getElementById("category-header-subtitle");
+      const iconEl = document.getElementById("category-header-icon");
+      const searchInput = document.getElementById("vault-search-input");
+
+      if (titleEl) titleEl.textContent = `${normalizedCat} Vault`;
+      if (searchInput) searchInput.placeholder = `Search in ${normalizedCat}...`;
+
+      const metaMap = {
+        Academic: { icon: "academic", desc: "Marksheets, IDs and more" },
+        Career: { icon: "career", desc: "Resume, Internships and letters" },
+        Achievements: { icon: "achievements", desc: "Certificates, trophies and awards" },
+        Health: { icon: "health", desc: "Reports, medical prescriptions and cards" },
+        Finance: { icon: "finance", desc: "Fee receipts and payment slips" }
+      };
+
+      const meta = metaMap[normalizedCat] || { icon: "vault", desc: "Category documents" };
+      if (subEl) subEl.textContent = meta.desc;
+      if (iconEl && ICONS[meta.icon]) {
+        iconEl.innerHTML = ICONS[meta.icon](28);
+      }
+
+      initVault();
+      vaultController.setCategory(catParam);
+    });
+  </script>
+</body>
+</html>
