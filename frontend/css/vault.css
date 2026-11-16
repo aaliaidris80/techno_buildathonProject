@@ -724,3 +724,43 @@
     max-width: 100%;
   }
 }
+
+/* =========================================
+   MY VAULT - FULL WIDTH DESKTOP LAYOUT
+   ========================================= */
+
+/* Expand only the My Vault content area */
+.app-main .app-container {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+/* Responsive document grid */
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Laptop */
+@media (max-width: 1200px) {
+  .vault-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .vault-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .vault-grid {
+    grid-template-columns: 1fr;
+  }
+}

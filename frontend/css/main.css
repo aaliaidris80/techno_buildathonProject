@@ -1,3 +1,4 @@
+
 /* ==========================================================================
    DocuPing - Main Stylesheet, CSS Reset, Layout & Responsive Breakpoints
    ========================================================================== */
@@ -9,6 +10,7 @@
 /* --------------------------------------------------------------------------
    1. Modern CSS Reset
    -------------------------------------------------------------------------- */
+
 *,
 *::before,
 *::after {
@@ -74,6 +76,7 @@ ol {
 /* --------------------------------------------------------------------------
    2. Typography Styles & Hierarchy
    -------------------------------------------------------------------------- */
+
 h1,
 .h1 {
   font-size: var(--font-size-3xl);
@@ -127,27 +130,36 @@ h3,
 /* --------------------------------------------------------------------------
    3. App Shell Layout Structure
    -------------------------------------------------------------------------- */
+
 .app-shell {
   display: flex;
+  width: 100%;
   min-height: 100vh;
   background-color: var(--color-bg);
   position: relative;
 }
 
+/* Main content area beside sidebar */
 .app-main {
   flex: 1;
+  min-width: 0;
+  width: calc(100% - var(--sidebar-width));
   margin-left: var(--sidebar-width);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   transition: margin-left var(--transition-normal);
+  box-sizing: border-box;
 }
 
+/* Full desktop content width */
 .app-container {
   width: 100%;
-  max-width: var(--content-max-width);
-  padding: 0 var(--spacing-3xl) var(--spacing-4xl);
+  max-width: none;
+  min-width: 0;
+  padding: 0 clamp(24px, 3vw, 48px) var(--spacing-4xl);
   margin: 0;
+  box-sizing: border-box;
 }
 
 /* Mobile Header Bar (Hidden on Desktop) */
@@ -177,6 +189,7 @@ h3,
 /* --------------------------------------------------------------------------
    4. Common Section Layouts & Grids
    -------------------------------------------------------------------------- */
+
 .page-header {
   margin-bottom: var(--spacing-2xl);
 }
@@ -263,7 +276,7 @@ h3,
   }
 
   .app-container {
-    padding: 0 var(--spacing-2xl) var(--spacing-3xl);
+    padding: 0 24px var(--spacing-3xl);
   }
 
   .grid-4 {
@@ -290,12 +303,17 @@ h3,
     transform: translateX(0);
   }
 
+  /* Main content takes full width on mobile */
   .app-main {
+    width: 100%;
     margin-left: 0;
+    min-width: 0;
   }
 
   .app-container {
-    padding: 0 var(--spacing-md) var(--spacing-2xl);
+    width: 100%;
+    max-width: none;
+    padding: 0 20px var(--spacing-3xl);
   }
 
   .topbar {
@@ -327,5 +345,13 @@ h3,
   .modal-container {
     margin: var(--spacing-sm);
     max-height: 90vh;
+  }
+}
+
+/* Small Mobile Screens */
+@media (max-width: 480px) {
+  .app-container {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }

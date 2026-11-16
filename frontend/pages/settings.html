@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage your DocuPing profile and settings.">
+  <title>Profile & Settings - DocuPing</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/settings.css">
+</head>
+
+<body>
+
+  <div class="mobile-topbar" role="banner">
+    <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu">☰</button>
+    <strong>DocuPing</strong>
+    <div class="user-avatar">A</div>
+  </div>
+
+  <div class="app-shell">
+
+    <div id="sidebar-mount"></div>
+
+    <main class="app-main" id="main-content">
+      <div class="app-container settings-container">
+
+        <!-- Header -->
+        <header class="settings-header">
+          <div>
+            <p class="settings-eyebrow">YOUR ACCOUNT</p>
+            <h1>Profile & Settings</h1>
+            <p>Manage your personal information and preferences.</p>
+          </div>
+        </header>
+
+        <!-- Profile Overview -->
+        <section class="profile-overview">
+          <div class="profile-avatar" id="profile-avatar">A</div>
+
+          <div class="profile-overview-info">
+            <h2 id="profile-display-name">Student Name</h2>
+            <p id="profile-display-email">student@email.com</p>
+            <span class="profile-tag">Student Account</span>
+          </div>
+
+          <button type="button" class="edit-profile-btn" id="edit-profile-btn">
+            Edit Profile
+          </button>
+        </section>
+
+        <div class="settings-grid">
+
+          <!-- Personal Information -->
+          <section class="settings-card personal-card" id="personal-section">
+            <div class="settings-card-heading">
+              <div>
+                <h2>Personal Information</h2>
+                <p>Keep your profile details up to date.</p>
+              </div>
+              <span class="settings-icon">👤</span>
+            </div>
+
+            <form id="profile-form">
+
+              <div class="settings-fields">
+                <div class="settings-field">
+                  <label for="profile-name">Full Name</label>
+                  <input type="text" id="profile-name" placeholder="Enter your name" required>
+                </div>
+
+                <div class="settings-field">
+                  <label for="profile-email">Email Address</label>
+                  <input type="email" id="profile-email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="settings-field">
+                  <label for="profile-college">College / Institution</label>
+                  <input type="text" id="profile-college" placeholder="Your college name">
+                </div>
+
+                <div class="settings-field">
+                  <label for="profile-course">Course / Program</label>
+                  <input type="text" id="profile-course" placeholder="e.g. B.Tech CSE">
+                </div>
+
+                <div class="settings-field">
+                  <label for="profile-year">Current Year</label>
+                  <select id="profile-year">
+                    <option value="">Select year</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <p class="settings-message" id="profile-message"></p>
+
+              <div class="settings-actions">
+                <button type="submit" class="settings-primary-btn">Save Changes</button>
+              </div>
+
+            </form>
+          </section>
+
+          <!-- Notification Preferences -->
+          <section class="settings-card">
+            <div class="settings-card-heading">
+              <div>
+                <h2>Notification Preferences</h2>
+                <p>Choose which reminders you want to receive.</p>
+              </div>
+              <span class="settings-icon">🔔</span>
+            </div>
+
+            <div class="preference-list">
+
+              <label class="preference-row">
+                <span>
+                  <strong>Document Expiry Alerts</strong>
+                  <small>Get notified before documents expire.</small>
+                </span>
+                <input type="checkbox" id="expiry-notifications" checked>
+                <span class="toggle-switch"></span>
+              </label>
+
+              <label class="preference-row">
+                <span>
+                  <strong>Appointment Reminders</strong>
+                  <small>Stay updated about upcoming appointments.</small>
+                </span>
+                <input type="checkbox" id="appointment-notifications" checked>
+                <span class="toggle-switch"></span>
+              </label>
+
+              <label class="preference-row">
+                <span>
+                  <strong>Deadline Notifications</strong>
+                  <small>Remember important submission deadlines.</small>
+                </span>
+                <input type="checkbox" id="deadline-notifications" checked>
+                <span class="toggle-switch"></span>
+              </label>
+
+            </div>
+          </section>
+
+          <!-- App Preferences -->
+          <section class="settings-card">
+            <div class="settings-card-heading">
+              <div>
+                <h2>App Preferences</h2>
+                <p>Customize your DocuPing experience.</p>
+              </div>
+              <span class="settings-icon">⚙️</span>
+            </div>
+
+            <div class="settings-field">
+              <label for="theme-preference">Appearance</label>
+              <select id="theme-preference">
+                <option value="light">Light Mode</option>
+                <option value="dark">Dark Mode (Coming Soon)</option>
+                <option value="system">System Default (Coming Soon)</option>
+              </select>
+              <small class="field-hint">Light mode is currently the supported theme.</small>
+            </div>
+          </section>
+
+          <!-- Account Security -->
+          <section class="settings-card">
+            <div class="settings-card-heading">
+              <div>
+                <h2>Account & Security</h2>
+                <p>Manage your account access.</p>
+              </div>
+              <span class="settings-icon">🔐</span>
+            </div>
+
+            <div class="security-info">
+              <div>
+                <strong>Password</strong>
+                <p>Keep your account credentials secure.</p>
+              </div>
+              <span class="security-status">Protected</span>
+            </div>
+
+            <button type="button" class="settings-secondary-btn" id="change-password-btn">
+              Change Password
+            </button>
+
+            <div class="settings-divider"></div>
+
+            <div class="security-info">
+              <div>
+                <strong>Log Out</strong>
+                <p>Sign out of your DocuPing account.</p>
+              </div>
+            </div>
+
+            <button type="button" class="settings-logout-btn" id="logout-btn">
+              Log Out
+            </button>
+          </section>
+
+        </div>
+
+        <footer class="settings-footer">
+          DocuPing · Your Personal Student Document Companion
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <div class="settings-toast" id="settings-toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="../js/settings.js"></script>
+
+</body>
+</html>

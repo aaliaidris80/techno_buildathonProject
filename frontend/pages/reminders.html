@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage your DocuPing reminders and important dates.">
+  <title>Ping Reminders | DocuPing</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/reminders.css">
+</head>
+
+<body>
+  <div class="mobile-topbar" role="banner">
+    <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu">
+      ☰
+    </button>
+    <div class="mobile-brand">DocuPing</div>
+    <a href="settings.html" class="user-avatar" aria-label="Profile settings">A</a>
+  </div>
+
+  <div class="app-shell">
+    <div id="sidebar-mount"></div>
+
+    <main class="app-main" id="main-content">
+      <div class="app-container reminders-container">
+
+        <header class="reminders-header">
+          <div>
+            <p class="page-eyebrow">STAY ON TRACK</p>
+            <h1>Ping Reminders <span>🔔</span></h1>
+            <p class="page-description">
+              Never miss an important date, deadline or appointment.
+            </p>
+          </div>
+
+          <button type="button" class="add-reminder-btn" id="open-reminder-form">
+            <span>+</span> Add Reminder
+          </button>
+        </header>
+
+        <section class="reminder-stats" aria-label="Reminder summary">
+          <article class="stat-card">
+            <div class="stat-icon upcoming-icon">◷</div>
+            <div>
+              <p>Upcoming</p>
+              <h2 id="upcoming-count">0</h2>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon overdue-icon">!</div>
+            <div>
+              <p>Overdue</p>
+              <h2 id="overdue-count">0</h2>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon completed-icon">✓</div>
+            <div>
+              <p>Completed</p>
+              <h2 id="completed-count">0</h2>
+            </div>
+          </article>
+        </section>
+
+        <section class="reminder-form-card" id="reminder-form-card" hidden>
+          <div class="form-card-heading">
+            <div>
+              <h2 id="form-heading">Create a reminder</h2>
+              <p>Add the details of something you don't want to forget.</p>
+            </div>
+            <button type="button" class="close-form-btn" id="close-reminder-form" aria-label="Close form">×</button>
+          </div>
+
+          <form id="reminder-form">
+            <div class="reminder-form-grid">
+
+              <div class="form-field field-wide">
+                <label for="reminder-title">Reminder title *</label>
+                <input type="text" id="reminder-title" placeholder="e.g. Passport renewal" maxlength="80" required>
+              </div>
+
+              <div class="form-field">
+                <label for="reminder-category">Category *</label>
+                <select id="reminder-category" required>
+                  <option value="">Select category</option>
+                  <option value="Document">Document Expiry</option>
+                  <option value="Academic">Academic Deadline</option>
+                  <option value="Health">Health Appointment</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="reminder-date">Date *</label>
+                <input type="date" id="reminder-date" required>
+              </div>
+
+              <div class="form-field">
+                <label for="reminder-time">Time (optional)</label>
+                <input type="time" id="reminder-time">
+              </div>
+
+              <div class="form-field field-wide">
+                <label for="reminder-notes">Notes (optional)</label>
+                <textarea id="reminder-notes" rows="3" maxlength="300" placeholder="Add any additional details..."></textarea>
+              </div>
+
+            </div>
+
+            <p class="form-message" id="form-message" role="alert"></p>
+
+            <div class="form-actions">
+              <button type="button" class="cancel-btn" id="cancel-reminder">Cancel</button>
+              <button type="submit" class="save-reminder-btn" id="save-reminder-btn">Save Reminder</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="reminders-content">
+          <div class="reminders-toolbar">
+            <div>
+              <h2>Your reminders</h2>
+              <p>Keep track of everything that matters.</p>
+            </div>
+
+            <div class="reminder-filters" role="group" aria-label="Filter reminders">
+              <button class="filter-btn active" data-filter="all" type="button">All</button>
+              <button class="filter-btn" data-filter="upcoming" type="button">Upcoming</button>
+              <button class="filter-btn" data-filter="overdue" type="button">Overdue</button>
+              <button class="filter-btn" data-filter="completed" type="button">Completed</button>
+            </div>
+          </div>
+
+          <div class="reminder-list" id="reminder-list" aria-live="polite">
+            <div class="empty-reminders">
+              <div class="empty-icon">🔔</div>
+              <h3>No reminders yet</h3>
+              <p>Add your first reminder to stay organized.</p>
+            </div>
+          </div>
+        </section>
+
+        <div class="reminder-toast" id="reminder-toast" role="status" aria-live="polite"></div>
+
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../js/reminders.js"></script>
+</body>
+</html>

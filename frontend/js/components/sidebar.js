@@ -1,6 +1,7 @@
+
 /**
  * DocuPing - AppSidebar Component
- * Persistent navigation sidebar matching DocuPing layout and responsive drawer.
+ * Persistent navigation sidebar and responsive drawer.
  */
 
 import { ICONS } from "../utils/icons.js";
@@ -8,8 +9,8 @@ import { ICONS } from "../utils/icons.js";
 export const NAV_ITEMS = [
   { id: "overview", label: "Overview", href: "index.html", icon: "overview" },
   { id: "my-vault", label: "My Vault", href: "pages/my-vault.html", icon: "vault" },
-  { id: "ping-reminders", label: "Ping Reminders", href: "pages/ping-reminders.html", icon: "bell" },
-  { id: "document-checklist", label: "Document Checklist", href: "pages/document-checklist.html", icon: "checklist" }
+  { id: "ping-reminders", label: "Ping Reminders", href: "pages/reminders.html", icon: "bell" },
+  { id: "document-checklist", label: "Document Checklist", href: "pages/Checklist.html", icon: "checklist" }
 ];
 
 export const FOOTER_ITEMS = [
@@ -18,38 +19,47 @@ export const FOOTER_ITEMS = [
 ];
 
 /**
- * Generates HTML string for AppSidebar
- * @param {string} activeId - ID of currently active navigation link
- * @param {string} [basePath=""] - Relative base path prefix (e.g. "../" for pages/)
+ * Generates HTML string for AppSidebar.
  */
 export function createSidebar(activeId = "overview", basePath = "") {
-  const navLinksHtml = NAV_ITEMS.map((item) => {
-    const isActive = item.id === activeId;
-    const href = item.href.startsWith("pages/") && basePath ? `${basePath}${item.href}` : (item.id === "overview" && basePath ? `${basePath}index.html` : item.href);
-    return `
-      <a href="${href}" class="sidebar-link ${isActive ? "active" : ""}" data-nav-id="${item.id}" ${isActive ? 'aria-current="page"' : ""}>
-        <span class="sidebar-link-icon">${ICONS[item.icon](20)}</span>
-        <span>${item.label}</span>
-      </a>
-    `;
-  }).join("");
 
-  const footerLinksHtml = FOOTER_ITEMS.map((item) => {
+  const getHref = (item) => {
+    if (item.id === "overview") {
+      return basePath ? `${basePath}index.html` : "index.html";
+    }
+
+    if (item.href.startsWith("pages/") && basePath) {
+      return `${basePath}${item.href}`;
+    }
+
+    return item.href;
+  };
+
+  const createLink = (item) => {
     const isActive = item.id === activeId;
-    const href = item.href.startsWith("pages/") && basePath ? `${basePath}${item.href}` : item.href;
+    const href = getHref(item);
+
     return `
-      <a href="${href}" class="sidebar-link ${isActive ? "active" : ""}" data-nav-id="${item.id}">
+      <a href="${href}"
+         class="sidebar-link ${isActive ? "active" : ""}"
+         data-nav-id="${item.id}"
+         ${isActive ? 'aria-current="page"' : ""}>
         <span class="sidebar-link-icon">${ICONS[item.icon](20)}</span>
         <span>${item.label}</span>
       </a>
     `;
-  }).join("");
+  };
+
+  const navLinksHtml = NAV_ITEMS.map(createLink).join("");
+  const footerLinksHtml = FOOTER_ITEMS.map(createLink).join("");
 
   const brandHref = basePath ? `${basePath}index.html` : "index.html";
 
   return `
     <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
+
     <aside class="app-sidebar" id="app-sidebar" aria-label="Main Navigation">
+
       <a href="${brandHref}" class="sidebar-brand">
         <span class="sidebar-logo-icon">${ICONS.logo(28)}</span>
         <span class="sidebar-brand-name">DocuPing</span>
@@ -62,14 +72,16 @@ export function createSidebar(activeId = "overview", basePath = "") {
       <div class="sidebar-footer">
         ${footerLinksHtml}
       </div>
+
     </aside>
   `;
 }
 
 /**
- * Initializes sidebar events (mobile drawer toggle, backdrop close)
+ * Initializes sidebar events.
  */
 export function initSidebar() {
+
   const sidebar = document.getElementById("app-sidebar");
   const backdrop = document.getElementById("sidebar-backdrop");
   const toggleBtn = document.getElementById("mobile-menu-toggle");
@@ -91,6 +103,7 @@ export function initSidebar() {
   if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
       const isOpen = sidebar.classList.contains("is-open");
+
       if (isOpen) {
         closeSidebar();
       } else {
@@ -103,51 +116,39 @@ export function initSidebar() {
     backdrop.addEventListener("click", closeSidebar);
   }
 
-  // Close on Escape key
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && sidebar.classList.contains("is-open")) {
       closeSidebar();
     }
   });
 
-  // Handle navigation clicks
   sidebar.querySelectorAll(".sidebar-link").forEach((link) => {
+
     link.addEventListener("click", (e) => {
+
       const navId = link.getAttribute("data-nav-id");
 
       if (navId === "logout") {
         e.preventDefault();
+
         try {
           localStorage.removeItem("docuping_auth_token");
           localStorage.removeItem("docuping_user_data");
         } catch (err) {}
+
         import("./toast.js").then(({ toast }) => {
           toast.success("Logged out successfully. Redirecting to login...");
+
           setTimeout(() => {
             window.location.href = link.getAttribute("href");
           }, 800);
         });
+
         return;
       }
 
-      const href = link.getAttribute("href");
-      const isKnownPage = href && (
-        href.includes("login.html") ||
-        href.includes("signup.html") ||
-        href.includes("my-vault.html") ||
-        href.includes("dashboard.html") ||
-        href.includes("index.html")
-      );
-      if (href && href.includes("pages/") && !isKnownPage) {
-        e.preventDefault();
-        const label = link.querySelector("span:last-child")?.textContent || "This";
-        import("./toast.js").then(({ toast }) => {
-          toast.show({
-            message: `"${label}" view is scheduled to be created in the next step.`,
-            type: "info"
-          });
-        });
-      }
+      // All other sidebar links navigate normally.
+      closeSidebar();
     });
   });
 }

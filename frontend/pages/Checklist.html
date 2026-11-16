@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track your essential student documents with DocuPing.">
+  <title>Document Checklist - DocuPing</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/checklist.css">
+</head>
+
+<body>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-topbar" role="banner">
+    <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu">
+      ☰
+    </button>
+    <strong>DocuPing</strong>
+    <a href="settings.html" class="user-avatar" aria-label="Profile Settings">A</a>
+  </div>
+
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content -->
+    <main class="app-main" id="main-content">
+      <div class="app-container checklist-container">
+
+        <!-- Page Header -->
+        <header class="checklist-header">
+          <div>
+            <p class="page-eyebrow">BE PREPARED, STAY ORGANIZED</p>
+            <h1>Document Checklist <span>✓</span></h1>
+            <p class="page-description">
+              Everything a student needs, all in one checklist.
+            </p>
+          </div>
+
+          <button type="button" class="add-document-btn" id="open-add-document">
+            <span>+</span> Add Document
+          </button>
+        </header>
+
+        <!-- Overall Progress -->
+        <section class="readiness-card">
+          <div class="readiness-info">
+            <div>
+              <p class="readiness-label">YOUR DOCUMENT READINESS</p>
+              <h2 id="readiness-percentage">0%</h2>
+              <p id="readiness-message">Start organizing your essential documents.</p>
+            </div>
+
+            <div class="readiness-circle" id="readiness-circle">
+              <div class="readiness-circle-inner">
+                <strong id="circle-percentage">0%</strong>
+                <span>Completed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+
+          <div class="progress-summary">
+            <span><strong id="completed-count">0</strong> Completed</span>
+            <span><strong id="missing-count">0</strong> Remaining</span>
+            <span><strong id="total-count">0</strong> Total Documents</span>
+          </div>
+        </section>
+
+        <!-- Category Overview -->
+        <section class="category-section">
+          <div class="section-heading">
+            <div>
+              <h2>Explore Categories</h2>
+              <p>Organize your documents by purpose.</p>
+            </div>
+          </div>
+
+          <div class="category-grid">
+
+            <button class="category-card active" data-category="All">
+              <span class="category-emoji">📁</span>
+              <span class="category-name">All Documents</span>
+              <strong id="category-all-count">0</strong>
+            </button>
+
+            <button class="category-card" data-category="Academic">
+              <span class="category-emoji">🎓</span>
+              <span class="category-name">Academic</span>
+              <strong id="category-academic-count">0</strong>
+            </button>
+
+            <button class="category-card" data-category="Career">
+              <span class="category-emoji">💼</span>
+              <span class="category-name">Career</span>
+              <strong id="category-career-count">0</strong>
+            </button>
+
+            <button class="category-card" data-category="Achievements">
+              <span class="category-emoji">🏆</span>
+              <span class="category-name">Achievements</span>
+              <strong id="category-achievements-count">0</strong>
+            </button>
+
+            <button class="category-card" data-category="Health">
+              <span class="category-emoji">🩺</span>
+              <span class="category-name">Health</span>
+              <strong id="category-health-count">0</strong>
+            </button>
+
+            <button class="category-card" data-category="Finance">
+              <span class="category-emoji">💳</span>
+              <span class="category-name">Finance</span>
+              <strong id="category-finance-count">0</strong>
+            </button>
+
+          </div>
+        </section>
+
+        <!-- Checklist -->
+        <section class="checklist-content">
+
+          <div class="checklist-toolbar">
+            <div>
+              <h2 id="list-heading">All Documents</h2>
+              <p>Check off documents as you get them ready.</p>
+            </div>
+
+            <div class="checklist-filters">
+              <button class="check-filter active" data-filter="all">All</button>
+              <button class="check-filter" data-filter="completed">Completed</button>
+              <button class="check-filter" data-filter="missing">Missing</button>
+            </div>
+          </div>
+
+          <div class="checklist-items" id="checklist-items">
+            <!-- Checklist items generated using JavaScript -->
+          </div>
+
+        </section>
+
+        <!-- Add Document Form -->
+        <section class="add-document-panel" id="add-document-panel" hidden>
+
+          <div class="panel-heading">
+            <div>
+              <h2>Add a Custom Document</h2>
+              <p>Add any document that is not already in your checklist.</p>
+            </div>
+
+            <button type="button" id="close-add-document" class="close-panel-btn" aria-label="Close form">
+              ×
+            </button>
+          </div>
+
+          <form id="add-document-form">
+
+            <div class="checklist-form-grid">
+
+              <div class="checklist-field field-wide">
+                <label for="custom-document-name">Document Name *</label>
+                <input
+                  type="text"
+                  id="custom-document-name"
+                  placeholder="e.g. Driving License"
+                  required
+                  maxlength="80"
+                >
+              </div>
+
+              <div class="checklist-field">
+                <label for="custom-document-category">Category *</label>
+                <select id="custom-document-category" required>
+                  <option value="">Select Category</option>
+                  <option value="Academic">Academic</option>
+                  <option value="Career">Career</option>
+                  <option value="Achievements">Achievements</option>
+                  <option value="Health">Health</option>
+                  <option value="Finance">Finance</option>
+                </select>
+              </div>
+
+              <div class="checklist-field">
+                <label for="custom-document-description">Description</label>
+                <input
+                  type="text"
+                  id="custom-document-description"
+                  placeholder="Optional details"
+                  maxlength="150"
+                >
+              </div>
+
+            </div>
+
+            <p class="checklist-form-message" id="checklist-form-message"></p>
+
+            <div class="checklist-form-actions">
+              <button type="button" class="cancel-document-btn" id="cancel-add-document">
+                Cancel
+              </button>
+
+              <button type="submit" class="save-document-btn">
+                Add to Checklist
+              </button>
+            </div>
+
+          </form>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <div class="checklist-toast" id="checklist-toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="../js/checklist.js"></script>
+
+</body>
+</html>
