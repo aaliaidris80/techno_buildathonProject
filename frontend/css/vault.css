@@ -1,0 +1,766 @@
+/* ==========================================================================
+   DocuPing - My Vault Styles
+   Matches Screenshot 4 (4. My Vault@1x.png), Screenshot 6 & Screenshot 7
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Vault Topbar & Header
+   -------------------------------------------------------------------------- */
+.vault-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-top: 0.25rem;
+}
+
+.vault-topbar-search {
+  flex: 1;
+  max-width: 520px;
+}
+
+.vault-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.vault-search-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.vault-search-input {
+  width: 100%;
+  height: 44px;
+  padding: 0.5rem 1rem 0.5rem 2.75rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.vault-search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+  outline: none;
+}
+
+.vault-search-clear {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+}
+
+.vault-search-clear:hover {
+  color: var(--color-text-primary);
+}
+
+/* Page Header */
+.vault-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.vault-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.vault-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.vault-actions-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-left: 0.75rem;
+}
+
+.vault-title {
+  font-size: 1.875rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.vault-count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--color-success-bg);
+  color: var(--color-primary);
+}
+
+.vault-subtitle {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  margin: 0.375rem 0 0 0;
+}
+
+.vault-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-track {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+}
+
+.btn-track:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+/* --------------------------------------------------------------------------
+   2. Filter & Sort Toolbar (Pills matching Screenshot 4)
+   -------------------------------------------------------------------------- */
+.vault-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.vault-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.vault-filter-pill {
+  padding: 0.5rem 1.125rem;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.vault-filter-pill:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.vault-filter-pill.is-active {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.vault-sort-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vault-sort-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.vault-sort-select {
+  padding: 0.45rem 1.75rem 0.45rem 0.875rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236C756F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.625rem center;
+}
+
+.vault-sort-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* --------------------------------------------------------------------------
+   3. Document Grid (3 Columns on Desktop)
+   -------------------------------------------------------------------------- */
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Document Card Extensions */
+.doc-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 175px;
+  padding: 1.5rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-subtle);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.doc-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(20, 30, 25, 0.08);
+  border-color: rgba(30, 69, 56, 0.28);
+}
+
+.doc-card-tracked {
+  border-left: 3px solid var(--color-primary);
+}
+
+.doc-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.125rem;
+}
+
+.doc-card-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-card-icon.is-pdf {
+  color: var(--color-file-pdf);
+}
+
+.doc-card-icon.is-doc {
+  color: var(--color-file-doc);
+}
+
+.doc-card-icon.is-image {
+  color: var(--color-primary);
+}
+
+.doc-card-icon.is-tracked {
+  color: var(--color-primary);
+}
+
+.doc-card-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.doc-type-badge {
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.doc-type-badge.is-pdf {
+  color: var(--color-file-pdf);
+}
+
+.doc-type-badge.is-doc {
+  color: var(--color-file-doc);
+}
+
+.doc-type-badge.is-image {
+  color: var(--color-primary);
+}
+
+.doc-type-badge.is-tracked {
+  color: var(--color-primary);
+}
+
+.status-badge-tracked {
+  background-color: var(--color-success-bg);
+  color: var(--color-primary);
+}
+
+.status-badge-expired {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.doc-card-body {
+  margin-bottom: 1.25rem;
+}
+
+.doc-card-title {
+  font-size: 1.0625rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.doc-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.doc-category-pill {
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background-color: var(--color-bg);
+  padding: 0.1875rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.doc-card-expiry {
+  font-size: 0.75rem;
+  color: var(--color-warning-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.doc-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(236, 232, 225, 0.75);
+}
+
+.doc-card-date {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.doc-card-menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.doc-card-menu-btn:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+/* --------------------------------------------------------------------------
+   4. Three-Dot Action Menu Popover
+   -------------------------------------------------------------------------- */
+.doc-menu-dropdown {
+  position: absolute;
+  right: 0;
+  bottom: 36px;
+  width: 175px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: 0 10px 26px rgba(20, 30, 25, 0.12);
+  z-index: var(--z-dropdown);
+  display: none;
+  padding: 0.375rem 0;
+  animation: menuFadeIn 0.14s ease-out;
+}
+
+.doc-menu-dropdown.is-open {
+  display: block;
+}
+
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.doc-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  background: transparent;
+  border: none;
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.doc-menu-item:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.doc-menu-item.is-danger {
+  color: var(--color-danger-text);
+}
+
+.doc-menu-item.is-danger:hover {
+  background-color: var(--color-danger-bg);
+}
+
+.doc-menu-divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 0.25rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   5. Upload Drop Zone Modal Styling (Screenshot 6)
+   -------------------------------------------------------------------------- */
+.upload-drop-zone {
+  border: 2px dashed #DDD7CE;
+  border-radius: 16px;
+  background-color: #FAF8F4;
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.upload-drop-zone:hover {
+  border-color: var(--color-primary);
+  background-color: #F6F4EE;
+}
+
+.upload-drop-zone.is-dragover {
+  border-color: var(--color-primary);
+  background-color: var(--color-success-bg);
+}
+
+.upload-zone-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  margin: 0 auto 0.75rem;
+}
+
+.upload-zone-title {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 0.375rem 0;
+}
+
+.upload-zone-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0 0 0.5rem 0;
+}
+
+.upload-zone-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.upload-selected-preview {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.upload-selected-preview.is-visible {
+  display: flex;
+}
+
+.preview-file-details {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.preview-file-name {
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.preview-file-size {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.preview-remove-btn {
+  background: none;
+  border: none;
+  color: var(--color-danger-text);
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Track Only Modal Styling (Screenshot 7)
+   -------------------------------------------------------------------------- */
+.track-header-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.track-badge-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: var(--color-success-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.track-badge-text h3 {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.track-badge-text p {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.track-highlights-list {
+  list-style: none;
+  padding: 1rem 0 0;
+  margin: 1.25rem 0 0;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.track-highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-primary);
+}
+
+.track-check-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   7. Empty State
+   -------------------------------------------------------------------------- */
+.vault-empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4.5rem 2rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  margin: 1rem 0 2rem;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.empty-state-title {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state-desc {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  max-width: 380px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   8. Responsive Breakpoints
+   -------------------------------------------------------------------------- */
+@media (max-width: 1080px) {
+  .vault-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .vault-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .vault-actions {
+    width: 100%;
+  }
+
+  .vault-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .vault-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vault-filter-pills {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .vault-filter-pill {
+    white-space: nowrap;
+  }
+
+  .vault-sort-group {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .vault-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vault-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .vault-topbar-search {
+    max-width: 100%;
+  }
+}
+
+/* =========================================
+   MY VAULT - FULL WIDTH DESKTOP LAYOUT
+   ========================================= */
+
+/* Expand only the My Vault content area */
+.app-main .app-container {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+/* Responsive document grid */
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Laptop */
+@media (max-width: 1200px) {
+  .vault-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .vault-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .vault-grid {
+    grid-template-columns: 1fr;
+  }
+}
