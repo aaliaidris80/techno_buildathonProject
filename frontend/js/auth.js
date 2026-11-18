@@ -1,9 +1,10 @@
 /**
  * DocuPing - Authentication Controller (Login & Signup)
- * Manages form validation, password visibility toggling, prototype auth sessions, and toasts.
+ * Connected to Backend Auth APIs (/api/auth/login & /api/auth/register)
  */
 
 import { CONFIG } from "./config.js";
+import { api } from "./api.js";
 import { toast } from "./components/toast.js";
 import { ICONS } from "./utils/icons.js";
 
@@ -14,9 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initSocialAuth();
 });
 
-/**
- * 1. Show / Hide Password Toggle
- */
 export function initPasswordToggles() {
   const toggleButtons = document.querySelectorAll("[data-toggle-target]");
 
@@ -24,7 +22,6 @@ export function initPasswordToggles() {
     btn.addEventListener("click", () => {
       const targetId = btn.getAttribute("data-toggle-target");
       const input = document.getElementById(targetId);
-
       if (!input) return;
 
       const isPassword = input.getAttribute("type") === "password";
@@ -37,9 +34,6 @@ export function initPasswordToggles() {
   });
 }
 
-/**
- * 2. Login Form Handling & Validation
- */
 export function initLoginForm() {
   const form = document.getElementById("login-form");
   if (!form) return;
@@ -47,20 +41,18 @@ export function initLoginForm() {
   const emailInput = document.getElementById("login-email");
   const passwordInput = document.getElementById("login-password");
 
-  // Real-time error clearance
   [emailInput, passwordInput].forEach((input) => {
     if (!input) return;
     input.addEventListener("input", () => clearFieldError(input));
   });
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     let isValid = true;
     const email = emailInput?.value.trim() || "";
     const password = passwordInput?.value || "";
 
-    // Validate email
     if (!email) {
       setFieldError(emailInput, "Please enter your email address.");
       isValid = false;
@@ -69,7 +61,6 @@ export function initLoginForm() {
       isValid = false;
     }
 
-    // Validate password
     if (!password) {
       setFieldError(passwordInput, "Please enter your password.");
       isValid = false;
@@ -80,22 +71,35 @@ export function initLoginForm() {
 
     if (!isValid) return;
 
-    // Prototype Authentication Success
-    submitPrototypeAuth({
-      type: "login",
-      user: {
-        email: email,
-        name: email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Student"
-      },
-      redirectUrl: "../index.html",
-      successMsg: "Welcome back! Redirecting to your dashboard..."
-    });
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      const res = await api.post(CONFIG.ENDPOINTS.AUTH.LOGIN, { email, password });
+
+      const token = res.token || res.data?.token;
+      const user = res.user || res.data?.user || {
+        email,
+        name: email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+      };
+
+      if (token) {
+        localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
+      }
+      localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+
+      toast.success("Welcome back! Redirecting to your dashboard...");
+      setTimeout(() => {
+        window.location.href = "../index.html";
+      }, 900);
+    } catch (error) {
+      toast.error(error.message || "Login failed. Please check your credentials.");
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
   });
 }
 
-/**
- * 3. Signup Form Handling & Validation
- */
 export function initSignupForm() {
   const form = document.getElementById("signup-form");
   if (!form) return;
@@ -115,7 +119,7 @@ export function initSignupForm() {
     termsCheckbox.addEventListener("change", () => clearFieldError(termsCheckbox));
   }
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     let isValid = true;
@@ -124,43 +128,26 @@ export function initSignupForm() {
     const password = passwordInput?.value || "";
     const confirmPassword = confirmPasswordInput?.value || "";
 
-    // Validate Name
-    if (!name) {
-      setFieldError(nameInput, "Please enter your full name.");
-      isValid = false;
-    } else if (name.length < 2) {
+    if (!name || name.length < 2) {
       setFieldError(nameInput, "Name must be at least 2 characters.");
       isValid = false;
     }
 
-    // Validate Email
-    if (!email) {
-      setFieldError(emailInput, "Please enter your email address.");
-      isValid = false;
-    } else if (!validateEmail(email)) {
+    if (!email || !validateEmail(email)) {
       setFieldError(emailInput, "Please enter a valid email address.");
       isValid = false;
     }
 
-    // Validate Password
-    if (!password) {
-      setFieldError(passwordInput, "Please create a password.");
-      isValid = false;
-    } else if (password.length < 6) {
+    if (!password || password.length < 6) {
       setFieldError(passwordInput, "Password must be at least 6 characters.");
       isValid = false;
     }
 
-    // Validate Confirm Password
-    if (!confirmPassword) {
-      setFieldError(confirmPasswordInput, "Please confirm your password.");
-      isValid = false;
-    } else if (confirmPassword !== password) {
+    if (confirmPassword !== password) {
       setFieldError(confirmPasswordInput, "Passwords do not match.");
       isValid = false;
     }
 
-    // Validate Terms Checkbox
     if (termsCheckbox && !termsCheckbox.checked) {
       setFieldError(termsCheckbox, "You must agree to the Terms & Privacy Policy.");
       isValid = false;
@@ -168,52 +155,41 @@ export function initSignupForm() {
 
     if (!isValid) return;
 
-    // Prototype Registration Success
-    submitPrototypeAuth({
-      type: "signup",
-      user: {
-        name: name,
-        email: email
-      },
-      redirectUrl: "onboarding.html", // Flow Screen 2: Student Onboarding
-      successMsg: "Account created! Redirecting to student onboarding..."
-    });
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      const res = await api.post(CONFIG.ENDPOINTS.AUTH.REGISTER, { name, email, password });
+
+      const token = res.token || res.data?.token;
+      const user = res.user || res.data?.user || { name, email };
+
+      if (token) {
+        localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
+      }
+      localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+
+      toast.success("Account created! Redirecting...");
+      setTimeout(() => {
+        window.location.href = token ? "../index.html" : "login.html";
+      }, 900);
+    } catch (error) {
+      toast.error(error.message || "Registration failed. Try again.");
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
   });
 }
 
-/**
- * 4. Social Auth Buttons (Prototype)
- */
 export function initSocialAuth() {
-  const googleBtns = document.querySelectorAll("[data-social='google']");
-  const githubBtns = document.querySelectorAll("[data-social='github']");
-
-  googleBtns.forEach((btn) => {
+  const socialBtns = document.querySelectorAll("[data-social='google'], [data-social='github']");
+  socialBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      submitPrototypeAuth({
-        type: "google",
-        user: { name: "Ananya Singh", email: "ananya@email.com" },
-        redirectUrl: "../index.html",
-        successMsg: "Connected via Google! Redirecting..."
-      });
-    });
-  });
-
-  githubBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      submitPrototypeAuth({
-        type: "github",
-        user: { name: "Ananya Singh", email: "ananya@github.com" },
-        redirectUrl: "../index.html",
-        successMsg: "Connected via GitHub! Redirecting..."
-      });
+      toast.info("Please use Email & Password login/signup for live database sync.");
     });
   });
 }
 
-/**
- * 5. Helper Validation & DOM Functions
- */
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -221,7 +197,6 @@ function validateEmail(email) {
 function setFieldError(inputEl, message) {
   if (!inputEl) return;
   inputEl.classList.add("is-invalid");
-
   const wrapper = inputEl.closest(".auth-input-group") || inputEl.closest(".form-field") || inputEl.parentElement;
   const errorEl = wrapper?.querySelector(".field-error-msg");
   if (errorEl) {
@@ -233,28 +208,10 @@ function setFieldError(inputEl, message) {
 function clearFieldError(inputEl) {
   if (!inputEl) return;
   inputEl.classList.remove("is-invalid");
-
   const wrapper = inputEl.closest(".auth-input-group") || inputEl.closest(".form-field") || inputEl.parentElement;
   const errorEl = wrapper?.querySelector(".field-error-msg");
   if (errorEl) {
     errorEl.textContent = "";
     errorEl.classList.remove("is-visible");
   }
-}
-
-function submitPrototypeAuth({ user, redirectUrl, successMsg }) {
-  // Store prototype session tokens
-  const mockToken = "mock_jwt_token_" + Date.now();
-  try {
-    localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, mockToken);
-    localStorage.setItem(CONFIG.STORAGE_KEYS.USER_DATA, JSON.stringify(user));
-  } catch (e) {
-    console.warn("localStorage unavailable:", e);
-  }
-
-  toast.success(successMsg);
-
-  setTimeout(() => {
-    window.location.href = redirectUrl;
-  }, 1200);
 }

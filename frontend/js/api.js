@@ -10,21 +10,16 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  /**
-   * Retrieves auth token from localStorage.
-   */
   getAuthToken() {
     return localStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
   }
 
-  /**
-   * Builds standard HTTP headers.
-   */
-  getHeaders(customHeaders = {}) {
-    const headers = {
-      "Content-Type": "application/json",
-      ...customHeaders
-    };
+  getHeaders(customHeaders = {}, isFormData = false) {
+    const headers = { ...customHeaders };
+
+    if (!isFormData && !headers["Content-Type"]) {
+      headers["Content-Type"] = "application/json";
+    }
 
     const token = this.getAuthToken();
     if (token) {
@@ -34,21 +29,18 @@ class ApiClient {
     return headers;
   }
 
-  /**
-   * Base request handler with error handling.
-   */
   async request(endpoint, options = {}) {
     const url = endpoint.startsWith("http") ? endpoint : `${this.baseUrl}${endpoint}`;
+    const isFormData = options.body instanceof FormData;
 
     const config = {
       ...options,
-      headers: this.getHeaders(options.headers)
+      headers: this.getHeaders(options.headers, isFormData)
     };
 
     try {
       const response = await fetch(url, config);
 
-      // Handle non-JSON or empty responses gracefully
       const contentType = response.headers.get("content-type");
       const isJson = contentType && contentType.includes("application/json");
       const data = isJson ? await response.json() : await response.text();
@@ -72,8 +64,15 @@ class ApiClient {
     return this.request(endpoint, {
       ...options,
       method: "POST",
-      body: JSON.stringify(body)
+      body: body instanceof FormData ? body : JSON.stringify(body)
     });
+  }
+
+  // Dedicated helper for Multer document upload (/documents/preview)
+  uploadDocument(file) {
+    const formData = new FormData();
+    formData.append("document", file);
+    return this.post(CONFIG.ENDPOINTS.DOCUMENTS.PREVIEW, formData);
   }
 
   put(endpoint, body, options = {}) {

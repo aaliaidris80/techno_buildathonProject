@@ -6,32 +6,34 @@
 export const CONFIG = {
   APP_NAME: "DocuPing",
   VERSION: "1.0.0",
-  
-  // Backend API Base URL (adjust according to your team's backend port/host)
+
   API_BASE_URL: "http://localhost:5000/api",
 
-  // API Endpoints
+  // Exact Backend Route Mappings
   ENDPOINTS: {
     AUTH: {
       LOGIN: "/auth/login",
       REGISTER: "/auth/register",
-      LOGOUT: "/auth/logout",
-      ME: "/auth/me"
+      PROTECTED: "/protected"
     },
     DOCUMENTS: {
+      PREVIEW: "/documents/preview",
+      CONFIRM: "/documents/confirm",
       LIST: "/documents",
+      SEARCH: (q) => `/documents/search?q=${encodeURIComponent(q)}`,
+      CHECKLIST: "/documents/checklist",
       DETAIL: (id) => `/documents/${id}`,
-      CREATE: "/documents",
       UPDATE: (id) => `/documents/${id}`,
       DELETE: (id) => `/documents/${id}`
     },
-    NOTIFICATIONS: {
-      LIST: "/notifications",
-      MARK_READ: (id) => `/notifications/${id}/read`
+    REMINDERS: {
+      LIST: "/reminders",
+      CREATE: "/reminders",
+      UPDATE: (id) => `/reminders/${id}`,
+      DELETE: (id) => `/reminders/${id}`
     }
   },
 
-  // Storage keys for localStorage / sessionStorage
   STORAGE_KEYS: {
     AUTH_TOKEN: "docuping_auth_token",
     USER_DATA: "docuping_user_data",
