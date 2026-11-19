@@ -7,7 +7,8 @@ export const CONFIG = {
   APP_NAME: "DocuPing",
   VERSION: "1.0.0",
 
-  API_BASE_URL: "https://techno-buildathonproject.onrender.com/api",
+  // LOCAL TESTING — switch back to "https://techno-buildathonproject.onrender.com/api" before committing.
+  API_BASE_URL: "http://localhost:5000/api",
 
   // Exact Backend Route Mappings
   ENDPOINTS: {
