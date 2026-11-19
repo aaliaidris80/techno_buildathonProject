@@ -75,11 +75,19 @@ No config change is needed before committing or deploying.
 
 | Part | Host | How it deploys |
 |---|---|---|
-| Frontend (`frontend/`) | Vercel | Static site. `vercel.json` serves `frontend/`; `.vercelignore` keeps `backend/` out so it is never run as a serverless function. |
+| Frontend (`frontend/`) | Vercel | Static site, no build step. |
 | Backend (`backend/`) | Render | Express API. Uses `MONGO_URI` and `JWT_SECRET` from Render's Environment settings. |
 
 Merging to `main` redeploys both automatically.
 
-**Vercel project settings:** Root Directory must be the repository root (blank) or `frontend` — **not** `backend`. Framework Preset: Other. No build command is needed.
+**How Vercel finds the frontend.** The config works with any Vercel **Root Directory** setting:
+
+| Root Directory | Config used |
+|---|---|
+| `backend` (current) | `backend/vercel.json` copies `../frontend` into `vercel-static/` and serves it. `.vercelignore` hides every other backend file so Vercel never runs the Express app. |
+| blank (repo root) | Root `vercel.json` serves `frontend/`. |
+| `frontend` (cleanest) | Served directly; no config needed. |
+
+Changing Root Directory to `frontend` in Vercel → Settings → Build and Deployment is the simplest setup; the files above keep the current setting working too.
 
 Don't deploy the backend to Vercel: it stores uploads on disk and runs OCR, which Vercel's read-only serverless functions can't do (this causes `500 FUNCTION_INVOCATION_FAILED`).
