@@ -3,12 +3,18 @@
  * Centralized settings and backend endpoint mappings.
  */
 
+// When the frontend is opened from this machine (e.g. via ./run-local.sh),
+// talk to the local backend; everywhere else, use the Render production API.
+const LOCAL_HOSTS = ["localhost", "127.0.0.1", "[::1]"];
+const IS_LOCAL = LOCAL_HOSTS.includes(window.location.hostname);
+
 export const CONFIG = {
   APP_NAME: "DocuPing",
   VERSION: "1.0.0",
 
-  // LOCAL TESTING — switch back to "https://techno-buildathonproject.onrender.com/api" before committing.
-  API_BASE_URL: "http://localhost:5000/api",
+  API_BASE_URL: IS_LOCAL
+    ? "http://localhost:5000/api"
+    : "https://techno-buildathonproject.onrender.com/api",
 
   // Exact Backend Route Mappings
   ENDPOINTS: {
