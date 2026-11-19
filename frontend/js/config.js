@@ -24,7 +24,8 @@ export const CONFIG = {
       CHECKLIST: "/documents/checklist",
       DETAIL: (id) => `/documents/${id}`,
       UPDATE: (id) => `/documents/${id}`,
-      DELETE: (id) => `/documents/${id}`
+      DELETE: (id) => `/documents/${id}`,
+      FILE: (id) => `/documents/${id}/file`
     },
     REMINDERS: {
       LIST: "/reminders",

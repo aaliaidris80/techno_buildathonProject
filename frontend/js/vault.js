@@ -11,6 +11,17 @@ import { toast } from "./components/toast.js";
 import { ICONS } from "./utils/icons.js";
 import { createDocumentCard } from "./components/documentCard.js";
 
+const escapeHtml = (value) =>
+  String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[ch]);
+
+const THUMB_LABELS = { pdf: "PDF", doc: "DOC", image: "IMG", track: "TRACK" };
+
 function mapBackendDocToCard(doc) {
   const ext = (doc.fileName || doc.title || "").split(".").pop().toLowerCase();
   let fileType = "pdf";
@@ -51,7 +62,10 @@ function mapBackendDocToCard(doc) {
     status,
     isTracked: Boolean(doc.isTrackOnly),
     extractedText: doc.extractedText || "",
-    notes: doc.extractedText ? `OCR Extracted: ${doc.extractedText.slice(0, 140)}...` : ""
+    notes: doc.extractedText ? `OCR Extracted: ${doc.extractedText.slice(0, 140)}...` : "",
+    fileName: doc.fileName || "",
+    mimeType: doc.fileType || "",
+    hasFile: !!doc.filePath && !doc.isTrackOnly
   };
 }
 
@@ -63,6 +77,9 @@ class VaultController {
       category: "all",
       sortBy: "recent"
     };
+    this.selectedId = null;
+    this.fileCache = new Map(); // docId -> { blob, url }
+    this.previewKey = null;
   }
 
   async init() {
@@ -81,6 +98,7 @@ class VaultController {
       const res = await api.get(endpoint);
       const list = res.documents || [];
       this.documents = list.map(mapBackendDocToCard);
+      this.pruneFileCache();
     } catch (e) {
       console.error("Failed to fetch documents from backend:", e.message);
       toast.error("Please login first or check backend connection.");
@@ -189,6 +207,53 @@ class VaultController {
       });
     }
 
+    const list = document.getElementById("vault-docs-list");
+    if (list) {
+      list.addEventListener("click", (e) => {
+        const row = e.target.closest(".vault-row");
+        if (row) this.selectDocument(row.getAttribute("data-doc-id"));
+      });
+
+      list.addEventListener("keydown", (e) => {
+        if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(e.key)) return;
+        const rows = Array.from(list.querySelectorAll(".vault-row"));
+        if (rows.length === 0) return;
+        e.preventDefault();
+
+        const current = rows.findIndex((r) => r.getAttribute("data-doc-id") === this.selectedId);
+        let next = current;
+        if (e.key === "ArrowDown") next = Math.min(rows.length - 1, current + 1);
+        if (e.key === "ArrowUp") next = Math.max(0, current - 1);
+        if (e.key === "Home") next = 0;
+        if (e.key === "End") next = rows.length - 1;
+
+        const target = rows[next];
+        if (!target) return;
+        this.selectDocument(target.getAttribute("data-doc-id"));
+        target.focus();
+        target.scrollIntoView({ block: "nearest" });
+      });
+    }
+
+    const preview = document.getElementById("vault-preview");
+    if (preview) {
+      preview.addEventListener("click", (e) => {
+        const actionEl = e.target.closest("[data-preview-action]");
+        if (!actionEl || !this.selectedId) return;
+        const action = actionEl.getAttribute("data-preview-action");
+        const docId = this.selectedId;
+
+        if (action === "download") this.downloadDocument(docId);
+        if (action === "share") this.shareDocument(docId);
+        if (action === "rename") this.editDocument(docId);
+        if (action === "delete") this.confirmDeleteDocument(docId);
+        if (action === "retry") {
+          this.previewKey = null;
+          this.renderPreview();
+        }
+      });
+    }
+
     document.addEventListener("click", () => this.closeAllMenus());
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") this.closeAllMenus();
@@ -246,8 +311,9 @@ class VaultController {
 
   render() {
     const grid = document.getElementById("vault-docs-grid");
+    const list = document.getElementById("vault-docs-list");
     const countBadge = document.getElementById("vault-count-badge");
-    if (!grid) return;
+    if (!grid && !list) return;
 
     const filtered = this.getFilteredDocuments();
 
@@ -255,51 +321,293 @@ class VaultController {
       countBadge.textContent = `${this.documents.length} document${this.documents.length === 1 ? "" : "s"}`;
     }
 
-    if (filtered.length === 0) {
-      grid.innerHTML = `
-        <div class="vault-empty-state" role="region" aria-label="No documents found">
-          <div class="empty-state-icon" aria-hidden="true">${ICONS.search(36)}</div>
-          <h3 class="empty-state-title">No documents found</h3>
-          <p class="empty-state-desc">
-            ${
-              this.state.searchQuery
-                ? `No documents matched "${this.state.searchQuery}".`
-                : `You don't have any documents in ${this.state.category} yet.`
-            }
-          </p>
-          <div style="display: flex; gap: 0.75rem;">
-            ${
-              this.state.searchQuery || this.state.category !== "all"
-                ? `<button type="button" class="btn btn-secondary btn-sm" id="btn-reset-filters">Reset Filters</button>`
-                : ""
-            }
-            <button type="button" class="btn btn-primary btn-sm" id="btn-empty-upload">
-              ${ICONS.plus(16)}
-              <span>Add Document</span>
-            </button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById("btn-reset-filters")?.addEventListener("click", async () => {
-        this.state.searchQuery = "";
-        const searchInput = document.getElementById("vault-search-input");
-        if (searchInput) searchInput.value = "";
-        await this.loadDocuments();
-        this.setCategory("all");
-      });
-
-      document.getElementById("btn-empty-upload")?.addEventListener("click", () => this.openUploadModal());
+    // Category page: keep the classic card grid.
+    if (grid) {
+      if (filtered.length === 0) {
+        this.renderEmptyState(grid);
+        return;
+      }
+      grid.innerHTML = filtered.map((doc) => createDocumentCard(doc)).join("");
       return;
     }
 
-    grid.innerHTML = filtered.map((doc) => createDocumentCard(doc)).join("");
+    // My Vault page: list + preview pane.
+    const split = list.closest(".vault-split");
+
+    if (filtered.length === 0) {
+      split?.classList.add("is-empty");
+      this.selectedId = null;
+      this.previewKey = null;
+      const preview = document.getElementById("vault-preview");
+      if (preview) preview.innerHTML = "";
+      this.renderEmptyState(list);
+      return;
+    }
+
+    split?.classList.remove("is-empty");
+
+    if (!filtered.some((d) => d.id === this.selectedId)) {
+      this.selectedId = filtered[0].id;
+    }
+
+    list.innerHTML = filtered.map((doc) => this.createRow(doc)).join("");
+    this.renderPreview();
+  }
+
+  renderEmptyState(container) {
+    container.innerHTML = `
+      <div class="vault-empty-state" role="region" aria-label="No documents found">
+        <div class="empty-state-icon" aria-hidden="true">${ICONS.search(36)}</div>
+        <h3 class="empty-state-title">No documents found</h3>
+        <p class="empty-state-desc">
+          ${
+            this.state.searchQuery
+              ? `No documents matched "${escapeHtml(this.state.searchQuery)}".`
+              : `You don't have any documents in ${escapeHtml(this.state.category)} yet.`
+          }
+        </p>
+        <div style="display: flex; gap: 0.75rem;">
+          ${
+            this.state.searchQuery || this.state.category !== "all"
+              ? `<button type="button" class="btn btn-secondary btn-sm" id="btn-reset-filters">Reset Filters</button>`
+              : ""
+          }
+          <button type="button" class="btn btn-primary btn-sm" id="btn-empty-upload">
+            ${ICONS.plus(16)}
+            <span>Add Document</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btn-reset-filters")?.addEventListener("click", async () => {
+      this.state.searchQuery = "";
+      const searchInput = document.getElementById("vault-search-input");
+      if (searchInput) searchInput.value = "";
+      await this.loadDocuments();
+      this.setCategory("all");
+    });
+
+    document.getElementById("btn-empty-upload")?.addEventListener("click", () => this.openUploadModal());
+  }
+
+  createRow(doc) {
+    const isActive = doc.id === this.selectedId;
+    const thumbType = THUMB_LABELS[doc.type] ? doc.type : "pdf";
+    const id = escapeHtml(doc.id);
+
+    return `
+      <button type="button"
+        class="vault-row${isActive ? " is-active" : ""}"
+        role="option"
+        id="vault-row-${id}"
+        data-doc-id="${id}"
+        aria-selected="${isActive}"
+        tabindex="${isActive ? "0" : "-1"}">
+        <span class="vault-row-thumb is-${thumbType}" aria-hidden="true">${THUMB_LABELS[thumbType]}</span>
+        <span class="vault-row-body">
+          <span class="vault-row-name">${escapeHtml(doc.name)}</span>
+          <span class="vault-row-meta">${escapeHtml(doc.category)} · ${escapeHtml(doc.date)}</span>
+        </span>
+        ${doc.status === "soon" ? `<span class="vault-row-dot" title="Expiring soon" aria-label="Expiring soon"></span>` : ""}
+      </button>
+    `;
+  }
+
+  selectDocument(docId) {
+    if (!docId || !this.documents.some((d) => d.id === docId)) return;
+    this.selectedId = docId;
+
+    document.querySelectorAll("#vault-docs-list .vault-row").forEach((row) => {
+      const active = row.getAttribute("data-doc-id") === docId;
+      row.classList.toggle("is-active", active);
+      row.setAttribute("aria-selected", String(active));
+      row.setAttribute("tabindex", active ? "0" : "-1");
+    });
+
+    this.renderPreview();
+  }
+
+  renderPreview() {
+    const preview = document.getElementById("vault-preview");
+    if (!preview) return;
+
+    const doc = this.documents.find((d) => d.id === this.selectedId);
+    if (!doc) {
+      preview.innerHTML = "";
+      this.previewKey = null;
+      return;
+    }
+
+    // Avoid reloading the stage (and flashing an iframe) when nothing changed.
+    const key = JSON.stringify([doc.id, doc.name, doc.category, doc.date, doc.expiryDate, doc.status, doc.hasFile, doc.mimeType]);
+    if (key === this.previewKey) return;
+    this.previewKey = key;
+
+    const metaSuffix = doc.isTracked ? "Tracked" : `Uploaded ${escapeHtml(doc.date)}`;
+    const isSoon = doc.status === "soon";
+    const expiryLabel = doc.expiryDate ? `Expires ${escapeHtml(doc.expiryDate)}` : "No expiry";
+
+    preview.innerHTML = `
+      <header class="vault-preview-header">
+        <div class="vault-preview-heading">
+          <h2 class="vault-preview-title">${escapeHtml(doc.name)}</h2>
+          <p class="vault-preview-meta">${escapeHtml(doc.category)} · ${metaSuffix}</p>
+        </div>
+        ${
+          doc.hasFile
+            ? `<div class="vault-preview-actions">
+                <button type="button" class="btn btn-secondary btn-sm" data-preview-action="download">Download</button>
+                <button type="button" class="btn btn-primary btn-sm" data-preview-action="share">Share</button>
+              </div>`
+            : ""
+        }
+      </header>
+
+      <div class="vault-preview-stage" id="vault-preview-stage"></div>
+
+      <div class="vault-preview-chips">
+        <span class="vault-chip ${isSoon ? "is-amber" : "is-sage"}">${ICONS.calendar(14)} <span>${expiryLabel}</span></span>
+        <a href="reminders.html" class="vault-chip is-link">+ Set reminder</a>
+        <button type="button" class="vault-chip is-link" data-preview-action="rename">${ICONS.edit(14)} <span>Rename</span></button>
+        <button type="button" class="vault-chip is-link is-danger" data-preview-action="delete">${ICONS.trash(14)} <span>Delete</span></button>
+      </div>
+    `;
+
+    this.renderStage(doc);
+  }
+
+  async renderStage(doc) {
+    const stage = document.getElementById("vault-preview-stage");
+    if (!stage) return;
+
+    if (!doc.hasFile) {
+      stage.innerHTML = this.stageMessage(
+        doc.isTracked ? "Tracked only" : "No file attached",
+        doc.isTracked
+          ? "This document is tracked for its expiry date. No file is stored in your vault."
+          : "There's no stored file for this document."
+      );
+      return;
+    }
+
+    if (!this.fileCache.has(doc.id)) {
+      stage.innerHTML = `<div class="vault-preview-placeholder"><span class="vault-preview-spinner" aria-hidden="true"></span><p>Loading preview…</p></div>`;
+    }
+
+    let entry;
+    try {
+      entry = await this.getFile(doc.id);
+    } catch (err) {
+      if (this.selectedId !== doc.id) return;
+      stage.innerHTML = this.stageMessage(
+        "Preview unavailable",
+        err.message || "The file could not be loaded.",
+        `<button type="button" class="btn btn-secondary btn-sm" data-preview-action="retry">Try again</button>`
+      );
+      this.previewKey = null;
+      return;
+    }
+
+    // Selection may have changed while the file was loading.
+    if (this.selectedId !== doc.id || !stage.isConnected) return;
+
+    const mime = (entry.blob.type || doc.mimeType || "").toLowerCase();
+    const title = escapeHtml(doc.name);
+
+    if (mime === "application/pdf") {
+      stage.innerHTML = `<iframe class="vault-preview-frame" src="${entry.url}" title="${title}"></iframe>`;
+    } else if (mime.startsWith("image/")) {
+      stage.innerHTML = `<img class="vault-preview-image" src="${entry.url}" alt="${title}" />`;
+    } else {
+      stage.innerHTML = this.stageMessage(
+        "No inline preview",
+        "This file type can't be previewed in the browser.",
+        `<button type="button" class="btn btn-secondary btn-sm" data-preview-action="download">Download file</button>`
+      );
+    }
+  }
+
+  stageMessage(title, desc, actionHtml = "") {
+    return `
+      <div class="vault-preview-placeholder">
+        <div class="empty-state-icon" aria-hidden="true">${ICONS.file(28)}</div>
+        <h3 class="vault-preview-placeholder-title">${escapeHtml(title)}</h3>
+        <p>${escapeHtml(desc)}</p>
+        ${actionHtml}
+      </div>
+    `;
+  }
+
+  async getFile(docId) {
+    const cached = this.fileCache.get(docId);
+    if (cached) return cached;
+
+    const blob = await api.getBlob(CONFIG.ENDPOINTS.DOCUMENTS.FILE(docId));
+    const entry = { blob, url: URL.createObjectURL(blob) };
+    this.fileCache.set(docId, entry);
+    return entry;
+  }
+
+  pruneFileCache() {
+    const ids = new Set(this.documents.map((d) => d.id));
+    for (const [id, entry] of this.fileCache) {
+      if (!ids.has(id)) {
+        URL.revokeObjectURL(entry.url);
+        this.fileCache.delete(id);
+      }
+    }
+  }
+
+  getDownloadName(doc) {
+    // Multer stores files as "<timestamp>-<originalname>"; strip the prefix.
+    const stored = (doc.fileName || "").replace(/^\d+-/, "");
+    return stored || doc.name || "document";
+  }
+
+  async downloadDocument(docId) {
+    const doc = this.documents.find((d) => d.id === docId);
+    if (!doc?.hasFile) return;
+
+    try {
+      const { url } = await this.getFile(docId);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = this.getDownloadName(doc);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      toast.error(err.message || "Download failed.");
+    }
+  }
+
+  async shareDocument(docId) {
+    const doc = this.documents.find((d) => d.id === docId);
+    if (!doc?.hasFile) return;
+
+    try {
+      const { blob } = await this.getFile(docId);
+      const file = new File([blob], this.getDownloadName(doc), {
+        type: blob.type || doc.mimeType || "application/octet-stream"
+      });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: doc.name });
+      } else {
+        toast.info("Sharing isn't supported in this browser. Use Download instead.");
+      }
+    } catch (err) {
+      if (err?.name === "AbortError") return; // user dismissed the share sheet
+      toast.error(err.message || "Share failed.");
+    }
   }
 
   // 5. Two-Step OCR Preview + Confirm Upload Workflow
   openUploadModal() {
     let selectedFile = null;
     let currentUploadId = null;
+    let scanToken = 0; // guards against a slower, older OCR request overwriting a newer one
 
     const contentHtml = `
       <form id="upload-doc-form" novalidate>
@@ -379,6 +687,15 @@ class VaultController {
     const ocrBanner = document.getElementById("ocr-status-banner");
     const saveBtn = document.getElementById("btn-save-upload");
 
+    // Save stays disabled until OCR returns an uploadId for the selected file.
+    if (saveBtn) saveBtn.disabled = true;
+
+    const showFileError = (message) => {
+      if (!fileError) return;
+      fileError.textContent = message;
+      fileError.style.display = "block";
+    };
+
     async function handleFile(file) {
       if (!file) return;
 
@@ -395,6 +712,7 @@ class VaultController {
       if (fileError) fileError.style.display = "none";
       selectedFile = file;
       currentUploadId = null;
+      const token = ++scanToken;
 
       if (previewName) previewName.textContent = file.name;
       if (previewSize) previewSize.textContent = "Scanning with OCR...";
@@ -403,6 +721,11 @@ class VaultController {
 
       try {
         const previewRes = await api.uploadDocument(file);
+        if (token !== scanToken) return; // a newer file was picked meanwhile
+
+        if (!previewRes?.uploadId) {
+          throw new Error("The server didn't return an upload ID. Please try again.");
+        }
         currentUploadId = previewRes.uploadId;
 
         const suggestedTitle = previewRes.suggestions?.title || file.name;
@@ -424,10 +747,18 @@ class VaultController {
         }
         toast.success(`OCR identified: ${suggestedTitle}`);
       } catch (err) {
+        if (token !== scanToken) return;
+        currentUploadId = null;
+        const reason = err.message || "OCR preview failed.";
+        const sentence = /[.!?]$/.test(reason) ? reason : `${reason}.`;
         if (previewSize) previewSize.textContent = "OCR scan failed";
-        toast.error(err.message || "OCR preview failed.");
+        showFileError(`Couldn't process this file: ${sentence} Remove it and try again.`);
+        if (ocrBanner) {
+          ocrBanner.innerHTML = `<span>OCR didn't complete, so the document can't be saved yet.</span>`;
+        }
+        toast.error(reason);
       } finally {
-        if (saveBtn) saveBtn.disabled = false;
+        if (token === scanToken && saveBtn) saveBtn.disabled = !currentUploadId;
       }
     }
 
@@ -455,7 +786,13 @@ class VaultController {
       e.stopPropagation();
       selectedFile = null;
       currentUploadId = null;
+      scanToken++; // discard any OCR request still in flight
       if (fileInput) fileInput.value = "";
+      if (fileError) fileError.style.display = "none";
+      if (saveBtn) saveBtn.disabled = true;
+      if (ocrBanner) {
+        ocrBanner.innerHTML = `${ICONS.check(16)} <span>Select a file to run Hybrid OCR & auto-detect document type.</span>`;
+      }
       if (previewBox) previewBox.classList.remove("is-visible");
     });
 
@@ -464,7 +801,11 @@ class VaultController {
       const nameError = document.getElementById("name-error");
 
       if (!currentUploadId) {
-        toast.error("Please upload a document file first so OCR can process it.");
+        showFileError(
+          selectedFile
+            ? "This file hasn't been processed yet. Wait for OCR to finish, or remove it and try again."
+            : "Please choose a document file first."
+        );
         return;
       }
 
@@ -496,7 +837,7 @@ class VaultController {
       } catch (err) {
         toast.error(err.message || "Failed to confirm document.");
       } finally {
-        saveBtn.disabled = false;
+        saveBtn.disabled = !currentUploadId;
       }
     });
   }

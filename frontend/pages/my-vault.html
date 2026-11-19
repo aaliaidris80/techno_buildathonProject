@@ -136,9 +136,10 @@
           </div>
         </div>
 
-        <!-- 4. Document Grid Container -->
-        <div class="vault-grid" id="vault-docs-grid" role="region" aria-label="Vault documents grid">
-          <!-- Populated dynamically via vault.js -->
+        <!-- 4. Document List + Preview Pane (populated dynamically via vault.js) -->
+        <div class="vault-split">
+          <div class="vault-list" id="vault-docs-list" role="listbox" aria-label="Vault documents"></div>
+          <section class="vault-preview" id="vault-preview" aria-live="polite" aria-label="Document preview"></section>
         </div>
 
       </div>

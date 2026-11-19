@@ -56,6 +56,31 @@ class ApiClient {
     }
   }
 
+  // Fetches a binary resource (e.g. a stored document file) with auth headers.
+  async getBlob(endpoint) {
+    const url = endpoint.startsWith("http") ? endpoint : `${this.baseUrl}${endpoint}`;
+    const headers = {};
+    const token = this.getAuthToken();
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const response = await fetch(url, { method: "GET", headers });
+
+    if (!response.ok) {
+      let message = `HTTP Error ${response.status}: ${response.statusText}`;
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        try {
+          const data = await response.json();
+          if (data?.message) message = data.message;
+        } catch (_) { /* ignore malformed body */ }
+      }
+      console.error(`[API Error] GET ${endpoint}:`, message);
+      throw new Error(message);
+    }
+
+    return response.blob();
+  }
+
   get(endpoint, options = {}) {
     return this.request(endpoint, { ...options, method: "GET" });
   }
