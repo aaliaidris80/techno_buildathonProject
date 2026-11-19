@@ -1,0 +1,5 @@
+# Vercel serves only the static frontend (see vercel.json).
+# The Express backend runs on Render; keep it out of Vercel so it is
+# never picked up as a serverless function.
+backend
+run-local.sh

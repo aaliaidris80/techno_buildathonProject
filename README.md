@@ -70,3 +70,16 @@ No config change is needed before committing or deploying.
 - **"Docker is not running"** — open Docker Desktop and wait until it's ready.
 - **Preview says "Document file is missing on the server"** — uploaded files are stored on the backend's disk, not in MongoDB. Upload the document again on the backend you're using.
 - **Start from a clean database** — `docker rm -f docuping-mongo && docker volume rm docuping-mongo-data`, then run the script again.
+
+## Deploy
+
+| Part | Host | How it deploys |
+|---|---|---|
+| Frontend (`frontend/`) | Vercel | Static site. `vercel.json` serves `frontend/`; `.vercelignore` keeps `backend/` out so it is never run as a serverless function. |
+| Backend (`backend/`) | Render | Express API. Uses `MONGO_URI` and `JWT_SECRET` from Render's Environment settings. |
+
+Merging to `main` redeploys both automatically.
+
+**Vercel project settings:** Root Directory must be the repository root (blank) or `frontend` — **not** `backend`. Framework Preset: Other. No build command is needed.
+
+Don't deploy the backend to Vercel: it stores uploads on disk and runs OCR, which Vercel's read-only serverless functions can't do (this causes `500 FUNCTION_INVOCATION_FAILED`).
