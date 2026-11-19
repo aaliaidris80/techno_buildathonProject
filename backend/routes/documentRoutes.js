@@ -11,6 +11,7 @@ const {
   getDocumentById,
   updateDocument,
   deleteDocument,
+  getDocumentFile,
   searchUserDocuments,
   getDocumentChecklist
 } = require("../controllers/documentController");
@@ -34,6 +35,7 @@ router.get("/search", authMiddleware, searchUserDocuments);
 router.get("/checklist", authMiddleware, getDocumentChecklist);
 
 router.get("/", authMiddleware, getDocuments);
+router.get("/:id/file", authMiddleware, getDocumentFile);
 router.get("/:id", authMiddleware, getDocumentById);
 router.put("/:id", authMiddleware, updateDocument);
 router.delete("/:id", authMiddleware, deleteDocument);

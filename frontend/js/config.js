@@ -7,7 +7,8 @@ export const CONFIG = {
   APP_NAME: "DocuPing",
   VERSION: "1.0.0",
 
-  API_BASE_URL: "https://techno-buildathonproject.onrender.com/api",
+  // LOCAL TESTING — switch back to "https://techno-buildathonproject.onrender.com/api" before committing.
+  API_BASE_URL: "http://localhost:5000/api",
 
   // Exact Backend Route Mappings
   ENDPOINTS: {
@@ -24,7 +25,8 @@ export const CONFIG = {
       CHECKLIST: "/documents/checklist",
       DETAIL: (id) => `/documents/${id}`,
       UPDATE: (id) => `/documents/${id}`,
-      DELETE: (id) => `/documents/${id}`
+      DELETE: (id) => `/documents/${id}`,
+      FILE: (id) => `/documents/${id}/file`
     },
     REMINDERS: {
       LIST: "/reminders",

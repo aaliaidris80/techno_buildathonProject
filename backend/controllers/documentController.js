@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 const Document = require("../models/Document");
 const PendingUpload = require("../models/PendingUpload");
@@ -388,6 +389,45 @@ const deleteDocument = async (req, res) => {
   }
 };
 
+// 9. GET DOCUMENT FILE (inline stream for preview / download)
+const getDocumentFile = async (req, res) => {
+  try {
+    const document = await Document.findOne({
+      _id: req.params.id,
+      userId: req.user.id
+    });
+
+    if (!document || !document.filePath) {
+      return res.status(404).json({
+        success: false,
+        message: "Document file not found."
+      });
+    }
+
+    const absolutePath = path.resolve(document.filePath);
+
+    if (!fs.existsSync(absolutePath)) {
+      return res.status(404).json({
+        success: false,
+        message: "Document file is missing on the server."
+      });
+    }
+
+    const fileName = encodeURIComponent(document.fileName || document.title || "document");
+
+    res.setHeader("Content-Type", document.fileType || "application/octet-stream");
+    res.setHeader("Content-Disposition", `inline; filename="${fileName}"`);
+
+    return res.sendFile(absolutePath);
+
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid document ID."
+    });
+  }
+};
+
 module.exports = {
   previewDocument,
   confirmDocument,
@@ -395,6 +435,7 @@ module.exports = {
   getDocumentById,
   updateDocument,
   deleteDocument,
+  getDocumentFile,
   searchUserDocuments,
   getDocumentChecklist
 };
