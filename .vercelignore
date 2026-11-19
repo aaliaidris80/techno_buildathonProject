@@ -1,5 +1,9 @@
-# Vercel serves only the static frontend (see vercel.json).
-# The Express backend runs on Render; keep it out of Vercel so it is
-# never picked up as a serverless function.
-backend
+# Vercel serves only the static frontend. The Express backend runs on Render.
+#
+# The Vercel project's Root Directory is currently "backend", so Vercel reads
+# backend/vercel.json, which copies ../frontend into the build output.
+# Hide every backend file except that config, so Vercel never detects the
+# Express app (that caused 500 FUNCTION_INVOCATION_FAILED).
+backend/*
+!backend/vercel.json
 run-local.sh
